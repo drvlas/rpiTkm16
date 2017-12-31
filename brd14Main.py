@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """ Програма для роботи з тензоАЦП-ПЛК TKM.99.01.14 (brd14)
     Проект CLion/brd14c2, замість ИП320 ставлю ПК
-    12.12.2017
+    12.12.2017 - my desktop
+    29.12.2017 - GIT, pass to Raspberry Pi3 and develop on it
 """
 import logging
 import sys
