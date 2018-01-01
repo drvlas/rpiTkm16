@@ -31,15 +31,28 @@ else:
 
 logging.basicConfig(level=logging.INFO)
 
-bauds = ['2400', '4800', '9600', '14400', '19200', '28800', '38400', '57600', '76800', '115200']
+bauds = [2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 76800, 115200]
 ports = ['/dev/ttyUSB0', '/dev/ttyUSB1', 'COM1', 'COM2']
-pointFormat7 = {
-            0: ('{: 07.0f}', 1),
-            1: ('{: 07.1f}', 0.1),
-            2: ('{: 07.2f}', 0.01),
-            3: ('{: 07.3f}', 0.001),
+pointFormat5 = {
+            0: ('{: 04.0f}', 1),
+            1: ('{: 04.1f}', 0.1),
+            2: ('{: 04.2f}', 0.01),
+            3: ('{: 04.3f}', 0.001),
         }
-point = 1
+pointFormat9 = {
+            0: ('{: 011.0f}', 1),
+            1: ('{: 011.1f}', 0.1),
+            2: ('{: 011.2f}', 0.01),
+            3: ('{: 011.3f}', 0.001),
+        }        
+point = 2
+
+MAIN_PAGE = 0
+PARS_PAGE = 1
+CLBR_PAGE = 2
+MANU_PAGE = 3
+LOGO_PAGE = 4
+
 
 class Main(QMainWindow, Ui_MainWindow):  # uic.loadUiType("adc_main_form.ui")[0]):
     def __init__(self):
@@ -48,12 +61,11 @@ class Main(QMainWindow, Ui_MainWindow):  # uic.loadUiType("adc_main_form.ui")[0]
         self.setupUi(self)      # інакше не розуміє атрібуту statusBar...
         # QMetaObject.connectSlotsByName(self)
         # self.ui_stopped = False
+        self.stackedWidget.setCurrentIndex(0)
         self.port_opened = False
-        self.port = 'COM1'                  # Default Windows port name
         self.slave = 1
-        self.baud = 38400
-        if linux:
-            self.port = '/dev/ttyUSB0'      # Default Linux port name
+        self.baud = bauds[6]
+        self.port = ports[0]            # Default Linux port name
         if len(sys.argv) > 1:               # Можна змінити ім’я послідовного порту аргументом
             self.port = sys.argv[1]
         self.refresh = QTimer()             # refresh.singleShot() is used for update data rate
@@ -161,112 +173,103 @@ class Main(QMainWindow, Ui_MainWindow):  # uic.loadUiType("adc_main_form.ui")[0]
     def morda(self, rg):                # Це, по суті, просто шматок (закінчення) update_data()
         statusRg = rg[adcRg['STAT'][0]]
         ctrlRg = rg[adcRg['CTRL'][0]]
-        form = pointFormat7[point][0]
-        decimal = pointFormat7[point][1]
+        form5 = pointFormat5[point][0]
+        deci5 = pointFormat5[point][1]
+        form9 = pointFormat9[point][0]
+        deci9 = pointFormat9[point][1]
+        # Fill widgets
+        phase = rg[adcRg['PHASE'][0]]
+        txt = "{:02d}: {:s}".format(phase, phaseText[phase])
+        self.PhaseLabel.setText(txt)
         weight = rg[adcRg['WEI16'][0]]
-        txt = form.format(weight * decimal)
-        self.labelWeight.setText(txt + " kg")
-        weight = rg[adcRg['DOZA1'][0]]
-        txt = form.format(weight * decimal)
-        self.labelWei1Txt.setText("Doza1: " + txt)
-        weight = rg[adcRg['DOZA2'][0]]
-        txt = form.format(weight * decimal)
-        self.labelWei2Txt.setText("Doza2: " + txt)
-        weight = rg[adcRg['WEI1'][0]]
-        txt = form.format(weight * decimal)
-        self.labelWei1.setText(txt + " kg")
-        weight = rg[adcRg['WEI2'][0]]
-        txt = form.format(weight * decimal)
-        self.labelWei2.setText(txt + " kg")
-
+        txt = form5.format(weight * deci5)
+        self.WeightLabel.setText(txt + "kg")
+        self.LevRadioButton0.setChecked(statusRg & adcBit['LEV0MSK'])
+        self.LevRadioButton1.setChecked(statusRg & adcBit['LEV1MSK'])
+        self.LevRadioButton2.setChecked(statusRg & adcBit['LEV2MSK'])
+        self.OverRadioButton.setChecked(statusRg & adcBit['OVERMSK'])
+        self.StabRadioButton.setChecked(statusRg & adcBit['STABMSK'])
         tare = rg[adcRg['TARE'][0]]
-        txt = form.format(tare * decimal)
-        self.lineEditTare.setText(txt)
+        txt = form5.format(tare * deci5)
         if tare == 0:
-            self.radioButtonTare.setChecked(False)
+            self.TareRadioButton.setChecked(False)
         else:
-            self.radioButtonTare.setChecked(True)
-        zero = rg[adcRg['ZERO'][0]]
-        txt = form.format(zero * decimal)
-        self.lineEditZero.setText(txt)
-        if zero == 0:
-            self.radioButtonZero.setChecked(False)
+            self.TareRadioButton.setChecked(True)
+        # Switch by page number
+        currInd = self.stackedWidget.currentIndex()
+        if currInd == MAIN_PAGE:
+            weight = rg[adcRg['DOZA1'][0]]
+            txt = form5.format(weight * deci5)
+            self.DoseLabel.setText(txt + "kg")
+            weight = rg[adcRg['DOZA1'][0]]
+            txt = form9.format(weight * deci9)
+            self.TotalLabel.setText(form9.format(deci9*rg[adcRg['TOTW'][0]]) + 'kg')
+        elif currInd == PARS_PAGE:
+            parn = rg[adcRg['PARN'][0]]
+            parv= 0
+            key = ''
+            for key in adcRg:
+                if adcRg[key][0] == parn:
+                    parv = rg[parn]
+                    break
+            self.ParameterLabel.setText("{:02d}: ".format(parn) + key + " = {:d} ".format(parv))
+        elif currInd == CLBR_PAGE:
+            self.ClbLabel0.setText("{:011.3f}".format(0.001*rg[adcRg['CLB0'][0]]))
+            self.ClbLabel1.setText("{:011.3f}".format(0.001*rg[adcRg['CLB1'][0]]))
+            self.ClbLabel2.setText("{:011.3f}".format(0.001*rg[adcRg['CLB2'][0]]))
+            self.ClbLabel3.setText("{:011.3f}".format(0.001*rg[adcRg['CLB3'][0]]))
+            self.AdcCodeLabel.setText("{:011.3f}".format(0.001*rg[adcRg['ADC'][0]]))
+            self.ZeroLabel.setText(pointFormat5[point][0].format(pointFormat5[point][1]*rg[adcRg['ZERO'][0]]/256) + "kg")
+        elif currInd == MANU_PAGE:
+            dio = rg[adcRg['CLB0'][0]]
+            self.InpRadioButton0.setChecked(dio & 1)
+            self.InpRadioButton1.setChecked(dio & 2)
+            self.InpRadioButton2.setChecked(dio & 4)
+            self.InpRadioButton3.setChecked(dio & 8)
+            self.InpRadioButton4.setChecked(dio & 16)
+            self.InpRadioButton5.setChecked(dio & 32)
+            self.InpRadioButton6.setChecked(dio & 64)
+            self.InpRadioButton7.setChecked(dio & 128)
+            self.OutRadioButton6.setChecked(dio & 64)
+            self.OutRadioButton7.setChecked(dio & 128)
+            self.OutRadioButton8.setChecked(dio & 256)
+            self.OutRadioButton9.setChecked(dio & 512)
+            self.OutRadioButtonA.setChecked(dio & 1024)
+            self.OutRadioButtonB.setChecked(dio & 2048)
+            self.OutRadioButtonC.setChecked(dio & 4096)
+            self.OutRadioButtonD.setChecked(dio & 8192)
+        elif currInd == LOGO_PAGE:
+            self.DvaTxtLabel.setText("DVA TKM16 Batch Weigher Controler")
+            self.VersionLabel.setText("Program version: " + "{:d}".format(rg[adcRg['V_SN'][0]]))
+            self.MasterRadioButton.setChecked(statusRg & adcBit['DOSTUPMSK'])
+            #self.CheckSumLabel.setText("Check Sum " + "0x{: 08X}".format(rg[adcRg['CASH'][0]]))
+            self.CheckSumLabel.setText("Check Sum: " + "{:d}".format(rg[adcRg['CASH'][0]]))
+            self.TokomTxtLabel.setText("TOKOM, Kyiv-2018")
+            self.MailTxtLabel.setText("tokom2009@gmail.com")
         else:
-            self.radioButtonZero.setChecked(True)
-        self.radioButtonMaster.setChecked(statusRg & adcBit['DOSTUPMSK'])
-        self.radioButtonLev0.setChecked(statusRg & adcBit['LEV0MSK'])
-        self.radioButtonLev1.setChecked(statusRg & adcBit['LEV1MSK'])
-        self.radioButtonLev2.setChecked(statusRg & adcBit['LEV2MSK'])
-        self.radioButtonOver.setChecked(statusRg & adcBit['OVERMSK'])
-        #self.radioButtonOver.setChecked(True)
-        self.radioButtonStab.setChecked(statusRg & adcBit['STABMSK'])
-        self.radioButtonFast.setChecked(ctrlRg & adcBit['FASTMSK'])
-
-        self.labelVersVal.setText("{:5d}".format(rg[adcRg['V_SN'][0]]))
-        self.lineEditLev0.setText("{:5d} ".format(rg[adcRg['LEV0'][0]]))
-        self.lineEditLev1.setText("{:5d} ".format(rg[adcRg['LEV1'][0]]))
-        self.lineEditLev2.setText("{:5d} ".format(rg[adcRg['LEV2'][0]]))
-        self.lineEditScale.setText("{:5d} ".format(rg[adcRg['SCALE'][0]]))
-        self.lineEditStab.setText("{:5d} ".format(rg[adcRg['STAB'][0]]))
-        self.labelCashVal.setText("0x{:08X}".format(0xFFFFFFFF & rg[adcRg['CASH'][0]]))
-        self.labelTotWVal.setText("{:9d}".format(rg[adcRg['TOTW'][0]]))
-        self.labelTotNVal.setText("{:9d}".format(rg[adcRg['TOTN'][0]]))
-        self.labelStatusVal.setText("0x{:04x}".format(statusRg))
-        self.labelErrorsVal.setText("0x{:04x}".format(rg[adcRg['ERROR'][0]]))
-        self.labelPhaseVal.setText("Phase: " + phaseText[rg[adcRg['PHASE'][0]]])
-        self.lineEditCtrl.setText("0x{:04X}".format(ctrlRg))
-        self.labelDirVal.setText("0x{:04X}".format(rg[adcRg['DIRR'][0]]))
-        self.labelDioVal.setText("0x{:04X} / {:05d}".format(rg[adcRg['DIO'][0]], rg[adcRg['DIO'][0]]))
-        self.labelFltrVal.setText("{:02d}".format(rg[adcRg['FLTR'][0]]))
-        self.labelCycleVal.setText("{:02d}".format(rg[adcRg['CYCLE'][0]]))
-
-        self.lineEditClb0.setText("{:9d}".format(rg[adcRg['CLB0'][0]]))
-        self.lineEditClb1.setText("{:9d}".format(rg[adcRg['CLB1'][0]]))
-        self.lineEditClb2.setText("{:9d}".format(rg[adcRg['CLB2'][0]]))
-        self.lineEditClb3.setText("{:9d}".format(rg[adcRg['CLB3'][0]]))
-        self.labelAdcVal.setText("{:9d}".format(rg[adcRg['ADC'][0]]))
-        self.lineEditRep0.setText("{:5d}".format(rg[adcRg['REP0'][0]]))
-        self.lineEditRep1.setText("{:5d}".format(rg[adcRg['REP1'][0]]))
-        self.lineEditRep2.setText("{:5d}".format(rg[adcRg['REP2'][0]]))
-        self.lineEditRep3.setText("{:5d}".format(rg[adcRg['REP3'][0]]))
-        self.lineEditPcn.setText("{:5d}".format(rg[adcRg['PCSN'][0]]))
-        self.lineEditRnd.setText("{:5d}".format(rg[adcRg['ROUND'][0]]))
-        self.lineEditRs485.setText("{:5d}".format(rg[adcRg['RS485'][0]]))
-
-        self.lineEditTunld.setText("{:5d}".format(rg[adcRg['TUNLD'][0]]))
-        self.lineEditTfeed.setText("{:5d}".format(rg[adcRg['TFEED'][0]]))
-        self.lineEditTmeas.setText("{:5d}".format(rg[adcRg['TMEAS'][0]]))
-        self.lineEditTbtm.setText("{:5d}".format(rg[adcRg['TBTM'][0]]))
-        self.lineEditTdiag.setText("{:5d}".format(rg[adcRg['TDIAG'][0]]))
-        self.lineEditTshrt.setText("{:5d}".format(rg[adcRg['TSHRT'][0]]))
-        self.lineEditTlong.setText("{:5d}".format(rg[adcRg['TLONG'][0]]))
-        self.lineEditTsleep.setText("{:5d}".format(rg[adcRg['TSLP'][0]]))
-        self.lineEditTrdy.setText("{:5d}".format(rg[adcRg['TRDY'][0]]))
-        self.lineEditTcycle.setText("{:5d}".format(rg[adcRg['TCYCL'][0]]))
-
-        self.lineEditDebounce.setText("{:5d}".format(rg[adcRg['TKEYS'][0]]))
-        self.lineEditAuto.setText("{:5d}".format(rg[adcRg['AUTOS'][0]]))
-        self.lineEditNskip.setText("{:5d}".format(rg[adcRg['NSKIP'][0]]))
-        self.lineEditTareZ.setText("{:5d}".format(rg[adcRg['TARZN'][0]]))
-
-        self.lineEditDoza1.setText("{:5d}".format(rg[adcRg['DOZA1'][0]]))
-        self.lineEditDoza2.setText("{:5d}".format(rg[adcRg['DOZA2'][0]]))
-        self.lineEditUpr11.setText("{:5d}".format(rg[adcRg['UPR11'][0]]))
-        self.lineEditUpr12.setText("{:5d}".format(rg[adcRg['UPR12'][0]]))
-        self.lineEditUpr21.setText("{:5d}".format(rg[adcRg['UPR21'][0]]))
-        self.lineEditUpr22.setText("{:5d}".format(rg[adcRg['UPR22'][0]]))
-        self.lineEditFfa1.setText("{:5d}".format(rg[adcRg['FFA1'][0]]))
-        self.lineEditFfa2.setText("{:5d}".format(rg[adcRg['FFA2'][0]]))
-        self.lineEditOpen1.setText("{:5d}".format(rg[adcRg['TOPN1'][0]]))
-        self.lineEditOpen2.setText("{:5d}".format(rg[adcRg['TOPN2'][0]]))
-        self.lineEditTsmin1.setText("{:5d}".format(rg[adcRg['TMIN1'][0]]))
-        self.lineEditTsmin2.setText("{:5d}".format(rg[adcRg['TMIN2'][0]]))
-        self.lineEditDozz1.setText("{:5d}".format(rg[adcRg['DOZZ1'][0]]))
-        self.lineEditDozz2.setText("{:5d}".format(rg[adcRg['DOZZ2'][0]]))
-
+            print("Page index out of range: " + "{:%d}".format(currInd))
+        
     # def resume(self): self.ui_stopped = False
 
+    def pageControl( button):
+        if button == 'MAIN': self.stackedWidget.setCurrentIndex(MAIN_PAGE)
+        elif button == 'PARS': self.stackedWidget.setCurrentIndex(PARS_PAGE)
+        elif button == 'CLBR': self.stackedWidget.setCurrentIndex(CLBR_PAGE)
+        elif button == 'MANU': self.stackedWidget.setCurrentIndex(MANU_PAGE)
+        elif button == 'LOGO': self.stackedWidget.setCurrentIndex(LOGO_PAGE)
+        else: pass
+        
     # 31 slots for Registers' setting
+    def on_MainPushButtonL_clicked(self): self.stackedWidget.setCurrentIndex(MAIN_PAGE)
+    def on_MainPushButtonR_clicked(self): self.stackedWidget.setCurrentIndex(MAIN_PAGE)
+    def on_ParsPushButtonL_clicked(self): self.stackedWidget.setCurrentIndex(PARS_PAGE)
+    def on_ParsPushButtonR_clicked(self): self.stackedWidget.setCurrentIndex(PARS_PAGE)
+    def on_ClbrPushButtonL_clicked(self): self.stackedWidget.setCurrentIndex(CLBR_PAGE)
+    def on_ClbrPushButtonR_clicked(self): self.stackedWidget.setCurrentIndex(CLBR_PAGE)
+    def on_ManuPushButtonL_clicked(self): self.stackedWidget.setCurrentIndex(MANU_PAGE)
+    def on_ManuPushButtonR_clicked(self): self.stackedWidget.setCurrentIndex(MANU_PAGE)
+    def on_LogoPushButtonL_clicked(self): self.stackedWidget.setCurrentIndex(LOGO_PAGE)
+    def on_LogoPushButtonR_clicked(self): self.stackedWidget.setCurrentIndex(LOGO_PAGE)
     def on_pushButtonScale_clicked(self): self.set_new_value('SCALE')
     def on_pushButtonLev2_clicked(self): self.set_new_value('LEV2')
     def on_pushButtonLev1_clicked(self): self.set_new_value('LEV1')
@@ -473,7 +476,7 @@ class Main(QMainWindow, Ui_MainWindow):  # uic.loadUiType("adc_main_form.ui")[0]
         #self.statusBar.showMessage(msg)
 
     def defreeze_status(self):
-        self.status2freeze = False
+        self.status2freeze = FaphaseTextlse
 
     def status_refresh(self, msg):
         if self.status2freeze:
