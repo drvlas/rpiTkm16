@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>320</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>480</width>
-    <height>320</height>
+    <height>300</height>
    </size>
   </property>
   <property name="font">
@@ -31,6 +31,18 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>480</width>
+     <height>248</height>
+    </size>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QLabel" name="PhaseLabel">
@@ -47,7 +59,7 @@
        </font>
       </property>
       <property name="frameShape">
-       <enum>QFrame::Box</enum>
+       <enum>QFrame::NoFrame</enum>
       </property>
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
@@ -99,7 +111,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>LEVL</string>
+         <string>LEV</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -200,7 +212,7 @@
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>TARE</string>
+         <string>TAR</string>
         </property>
        </widget>
       </item>
@@ -213,7 +225,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>STAB</string>
+         <string>STB</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -262,7 +274,7 @@
        <enum>QFrame::Raised</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="DosePage">
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -857,8 +869,8 @@
        </layout>
       </widget>
       <widget class="QWidget" name="ManuPage">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
            <widget class="QPushButton" name="LogoPushButtonR">
@@ -929,74 +941,9 @@
           </item>
          </layout>
         </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="1" column="3">
-           <widget class="QRadioButton" name="OutRadioButton8">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUT8</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="3">
-           <widget class="QRadioButton" name="OutRadioButtonA">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUTA</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QRadioButton" name="OutRadioButton7">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUT7</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <widget class="QRadioButton" name="OutRadioButtonC">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUTC</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QRadioButton" name="OutRadioButton6">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUT6</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="5">
+        <item row="1" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
            <widget class="QRadioButton" name="InpRadioButton0">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1005,11 +952,11 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>INP0</string>
+             <string>i0</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="4">
+          <item>
            <widget class="QRadioButton" name="InpRadioButton1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1018,24 +965,11 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>INP1</string>
+             <string>i1</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QRadioButton" name="OutRadioButton9">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUT9</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="5">
+          <item>
            <widget class="QRadioButton" name="InpRadioButton2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1044,11 +978,11 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>INP2</string>
+             <string>i2</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="4">
+          <item>
            <widget class="QRadioButton" name="InpRadioButton3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1057,50 +991,11 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>INP3</string>
+             <string>i3</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QRadioButton" name="OutRadioButtonB">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUTB</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QRadioButton" name="OutRadioButtonD">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>OUTD</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="4">
-           <widget class="QRadioButton" name="InpRadioButton5">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>INP5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="5">
+          <item>
            <widget class="QRadioButton" name="InpRadioButton4">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1109,11 +1004,24 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>INP4</string>
+             <string>i4</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="5">
+          <item>
+           <widget class="QRadioButton" name="InpRadioButton5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>i5</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QRadioButton" name="InpRadioButton6">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1122,11 +1030,11 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>INP6</string>
+             <string>i6</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="4">
+          <item>
            <widget class="QRadioButton" name="InpRadioButton7">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1135,7 +1043,115 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>INP7</string>
+             <string>i7</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QRadioButton" name="OutRadioButton6">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>o6</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="OutRadioButton7">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>o7</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="OutRadioButton8">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>o8</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="OutRadioButton9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>o9</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="OutRadioButtonA">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>oA</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="OutRadioButtonB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>oB</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="OutRadioButtonC">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>oC</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="OutRadioButtonD">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>oD</string>
             </property>
            </widget>
           </item>
@@ -1314,7 +1330,14 @@
    <zorder>stackedWidget</zorder>
    <zorder>WeightLabel</zorder>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
@@ -1323,6 +1346,12 @@
      <width>480</width>
      <height>26</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
    <widget class="QMenu" name="menuCLBR">
     <property name="font">

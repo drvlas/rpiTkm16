@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-""" Програма для роботи з тензоАЦП-ПЛК TKM.99.01.14 (brd14)
-    Проект CsizeObject = QtWidgets.QDesktopWidget().screenGeometry(-1)
-    print(" Screen size : "  + str(sizeObject.height()) + "x"  + str(sizeObject.width()Lion/brd14c2, замість ИП320 ставлю ПК
-    12.12.2017 - my desktop
-    29.12.2017 - GIT, pass to Raspberry Pi3 and develop on it
+""" NumPad Module
+    Opens QDialog Widget and accepts a numeric value
+    Uses its own numeric pad
+    01.01.2017
 """
 import logging
 import sys
@@ -12,55 +11,18 @@ from sys import platform
 
 # from PyQt5 import uic
 from PyQt5.QtCore import QTimer, QPoint
-from PyQt5.QtWidgets import QMainWindow, QApplication, QInputDialog, QMenu
+from PyQt5.QtWidgets import QMainWindow, QApplication, QDialog, QMenu
 from PyQt5 import QtWidgets
 
 # My modules
-from mainWindow import Ui_MainWindow
 from numPad import Ui_Dialog
-"""
-    УВАГА! Зараз запуску з аргументами нема. Тому треба ручками задати тип плати і debug mode
-"""
-from brd14Io import *
-from brd14Descriptor import nregs  # ctrl_cmd, adc_bits, adc_rg,  adc_io does not import descriptor
-
-# check me:
-print('Read from Map nregs:', nregs)
-
-if platform.startswith('linux'):
-    linux = True
-else:
-    linux = False   # поки що...
 
 logging.basicConfig(level=logging.INFO)
 
-bauds = [2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 76800, 115200]
-ports = ['/dev/ttyUSB0', '/dev/ttyUSB1', 'COM1', 'COM2']
-pointFormat5 = {
-            0: ('{: 06d}', 1),
-            1: ('{: 06.1f}', 0.1),
-            2: ('{: 06.2f}', 0.01),
-            3: ('{: 06.3f}', 0.001),
-        }
-pointFormat9 = {
-            0: ('{: 011d}', 1),
-            1: ('{: 011.1f}', 0.1),
-            2: ('{: 011.2f}', 0.01),
-            3: ('{: 011.3f}', 0.001),
-        }        
-point = 2
 
-MAIN_PAGE = 0
-PARS_PAGE = 1
-CLBR_PAGE = 2
-MANU_PAGE = 3
-LOGO_PAGE = 4
-
-
-class Main(QMainWindow, Ui_MainWindow):  # uic.loadUiType("adc_main_form.ui")[0]):
+class NumDialog(QDialog, Ui_Dialog):
     def __init__(self):
         super(Main, self).__init__()
-        # Set up the user interface from Designer.
         sizeObject = QtWidgets.QDesktopWidget().screenGeometry(-1)
         xScreen = sizeObject.width()
         yScreen = sizeObject.height()
@@ -68,79 +30,15 @@ class Main(QMainWindow, Ui_MainWindow):  # uic.loadUiType("adc_main_form.ui")[0]
         yApp = 290
         if xScreen < xApp: xApp = xScreen
         if yScreen < yApp: yApp = yScreen
-        print(" Screen   size : "  + str(xScreen) + "x"  + str(yScreen))
-        print(" Accepted size : "  + str(xApp) + "x"  + str(yApp))
-        self.setupUi(self)      # інакше не розуміє атрібуту statusBar...
+        #print(" Screen   size : "  + str(xScreen) + "x"  + str(yScreen))
+        #print(" Accepted size : "  + str(xApp) + "x"  + str(yApp))
+        self.setupUi(self) 
+        QDialog.setFixedSize(self, xApp, yApp)
+        self.inputValue = 0
+        self.acceptData()
         
-        QMainWindow.setFixedSize(self, xApp, yApp)
-        # QMetaObject.connectSlotsByName(self)
-        # self.ui_stopped = False
-        self.stackedWidget.setCurrentIndex(0)
-        self.port_opened = False
-        self.slave = 1
-        self.baud = bauds[6]
-        self.port = ports[0]            # Default Linux port name
-        if len(sys.argv) > 1:               # Можна змінити ім’я послідовного порту аргументом
-            self.port = sys.argv[1]
-        self.refresh = QTimer()             # refresh.singleShot() is used for update data rate
-        self.status_freeze_timer = QTimer()
-        self.status2freeze = False
-        self.inpBin = ()
-        self.requests_stopped = False   # During port setting dialog request are stopped
-        # self.ui_stopped = False
-        self.io = None
-        self.modbusCount = 0
-        self.update_data()              # почнеться з adc_io.ModbusChannel()
 
-    def on_action_Port_triggered(self):               # toolbar: 'Port' key
-        self.requests_stopped = True
-        p, ok = QInputDialog.getItem(self, 'Input Dialog', 'Enter or choose port name:', ports)
-        if ok:
-            self.port = str(p)      # because p is QtCore.QString(u'/dev/ttyUSB0')
-        self.port_opened = False    # ModbusChannel may be reopened
-        self.requests_stopped = False
-        self.update_data()
-
-    def on_action_Slave_ID_triggered(self):               # toolbar: 'Slave' key
-        self.requests_stopped = True
-        s, ok = QInputDialog.getInt(self, 'Input Dialog', 'Enter Slave ID (1..247):', 1, 1, 247)
-        if ok:
-            self.slave = s
-        self.port_opened = False    # ModbusChannel may be reopened even if no new sl.ID entered
-        self.requests_stopped = False
-        self.update_data()
-
-    def on_action_Baudrate_triggered(self):               # toolbar: 'Baud' key
-        self.requests_stopped = True
-        b, ok = QInputDialog.getItem(self, 'Input Dialog', 'Enter baud rate:', bauds)
-        if ok:
-            self.baud = int(b)
-        self.port_opened = False    # ModbusChannel may be reopened even if no new baud entered
-        self.requests_stopped = False
-        self.update_data()          # ..e.g. we just want to reopen port manually
-
-    def on_action_Quit_triggered(self):
-        # ModbusChannel.close(self.io)
-        self.close()
-
-    # def on_action_Modify_triggered(self):
-    #     self.ui_stopped = True
-
-    def resumeRefresh(self): passstatusbar
-
-    def stopRefresh(self): pass
-    
-    # Main refresh method. Може "сачкувати" у двох випадках:
-    #   1) requests_stopped - не робимо ні запитів на АЦП, ні оновлення екрану. Це для того,
-    # щоб оперативно працювати з діалоговими вікнами - особливо, коли у модбаса є проблеми
-    #   2) ui_stopped - запити до АЦП продовжуємо, щоб АЦП не втрачав зв’язок і не ресетувався,
-    # але оновлення екрану зупиняємо, щоб юзер міг ввести нове значення регістру
-    # У решті випадків намагається вичитувати усі регістри АЦП і малювати морду.
-    # Але, якщо порт не відкритий - намагається його відкрити. І це єдине місце,
-    # де відкривається порт.
-    #
-
-    def update_data(self):
+    def acceptData(self):
         if self.requests_stopped:
             self.refresh.singleShot(400, self.update_data)
             return                  # To allow dialogs run undisturbed
