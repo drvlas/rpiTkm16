@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>Window</class>
+ <widget class="QMainWindow" name="Window">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -45,7 +45,7 @@
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QLabel" name="PhaseLabel">
+     <widget class="QLabel" name="lab_phase">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -73,7 +73,7 @@
      </widget>
     </item>
     <item row="0" column="1" rowspan="2">
-     <widget class="QLabel" name="WeightLabel">
+     <widget class="QLabel" name="lab_weight">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -101,9 +101,9 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <layout class="QHBoxLayout" name="hl_leds">
       <item>
-       <widget class="QLabel" name="LevTxtLabel">
+       <widget class="QLabel" name="lab_lev">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -119,7 +119,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LevRadioButton0">
+       <widget class="QRadioButton" name="rb_lev0">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -138,7 +138,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LevRadioButton1">
+       <widget class="QRadioButton" name="rb_lev1">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -157,7 +157,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="LevRadioButton2">
+       <widget class="QRadioButton" name="rb_lev2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -176,7 +176,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="OverRadioButton">
+       <widget class="QRadioButton" name="rb_over">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -195,7 +195,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="TareRadioButton">
+       <widget class="QRadioButton" name="rb_tare">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -217,7 +217,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="StabTxtLabel">
+       <widget class="QLabel" name="lab_stab">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -233,7 +233,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="StabRadioButton">
+       <widget class="QRadioButton" name="rb_stab">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -254,7 +254,7 @@
      </layout>
     </item>
     <item row="2" column="0" colspan="2">
-     <widget class="QStackedWidget" name="stackedWidget">
+     <widget class="QStackedWidget" name="sw_pages">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
         <horstretch>0</horstretch>
@@ -274,14 +274,14 @@
        <enum>QFrame::Raised</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="DosePage">
+      <widget class="QWidget" name="dose_page">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QHBoxLayout" name="hl_main">
           <item>
-           <widget class="QPushButton" name="ParsPushButtonR">
+           <widget class="QPushButton" name="pb_pars_right">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -293,7 +293,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_10">
+           <spacer name="hs_main_pars">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -306,7 +306,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="MainTxtLabel">
+           <widget class="QLabel" name="lab_main">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -323,7 +323,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_9">
+           <spacer name="hs_logo_main">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -336,7 +336,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="LogoPushButtonL">
+           <widget class="QPushButton" name="pb_logo_left">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -350,9 +350,9 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <layout class="QHBoxLayout" name="hl_dos_nom">
           <item>
-           <widget class="QLabel" name="DoseLabel">
+           <widget class="QLabel" name="lab_dose">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -383,7 +383,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="DoseNomPushButton">
+           <widget class="QPushButton" name="pb_dose_nom">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -395,7 +395,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_11">
+           <spacer name="hs_dose">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -410,7 +410,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="TotalLabel">
+         <widget class="QLabel" name="lab_total">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
             <horstretch>0</horstretch>
@@ -439,86 +439,84 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="ParsPage">
-       <layout class="QGridLayout" name="gridLayout_5">
+      <widget class="QWidget" name="pars_page">
+       <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QWidget" name="widget" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QPushButton" name="ClbrPushButtonR">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::RightToLeft</enum>
-             </property>
-             <property name="text">
-              <string>CLBR</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>71</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QLabel" name="ParsTxtLabel">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>PARAMS</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>98</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QPushButton" name="MainPushButtonL">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>MAIN</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="pb_clbr_right">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="text">
+             <string>CLBR</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="hs_main_par">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>98</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="lab_pars">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>PARAMS</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="hs_par_clb">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>71</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_main_left">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>MAIN</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="ParameterLabel">
+         <widget class="QLabel" name="lab_parameter">
           <property name="font">
            <font>
             <pointsize>18</pointsize>
@@ -539,341 +537,342 @@
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QWidget" name="ParsWidget" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QPushButton" name="ParNPushButton">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>PAR N</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="NextPushButton">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>NEXT</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="PrevPushButton">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>PREV</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="ParVPushButton">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>PAR V</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="pb_parv">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>PAR V</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_prev">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>PREV</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_next">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>NEXT</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_parn">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>PAR N</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="ClbrPage">
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="ManuPushButtonR">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>MANU</string>
-          </property>
-         </widget>
+      <widget class="QWidget" name="clbr_page">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QPushButton" name="pb_manu_right">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>MANU</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="hs_parsclb">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>78</width>
+              <height>26</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="lab_clbr">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>CLBR</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="hs_clb_main">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>91</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_pars_left">
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>PARS</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item row="0" column="1">
-         <spacer name="horizontalSpacer_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>91</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="2" colspan="2">
-         <widget class="QLabel" name="ClbrTxtLabel">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>CLBR</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>78</width>
-            <height>26</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="5">
-         <widget class="QPushButton" name="ParsPushButtonL">
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>PARS</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="ClbPushButton0">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>CLBR0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QLabel" name="ClbLabel1">
-          <property name="font">
-           <font>
-            <family>Noto Mono</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>123456.789</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="4">
-         <widget class="QPushButton" name="ClbPushButton1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>CLBR1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="5">
-         <widget class="QLabel" name="ClbLabel0">
-          <property name="font">
-           <font>
-            <family>Noto Mono</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>123456.789</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="ClbPushButton2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>CLBR2</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" colspan="2">
-         <widget class="QLabel" name="ClbLabel3">
-          <property name="font">
-           <font>
-            <family>Noto Mono</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>123456.789</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="4">
-         <widget class="QPushButton" name="ClbPushButton3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>CLBR3</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="5">
-         <widget class="QLabel" name="ClbLabel2">
-          <property name="font">
-           <font>
-            <family>Noto Mono</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>123456.789</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="AdcTxtLabel">
-          <property name="text">
-           <string>ADC</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1" colspan="2">
-         <widget class="QLabel" name="AdcCodeLabel">
-          <property name="font">
-           <font>
-            <family>Noto Mono</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>123456.789</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="4">
-         <widget class="QPushButton" name="ZeroPushButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>ZERO</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="5">
-         <widget class="QLabel" name="ZeroLabel">
-          <property name="font">
-           <font>
-            <family>Noto Mono</family>
-           </font>
-          </property>
-          <property name="text">
-           <string>-1234.56kg</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="ManuPage">
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QPushButton" name="LogoPushButtonR">
+           <widget class="QLabel" name="lab_clb1">
+            <property name="font">
+             <font>
+              <family>Noto Mono</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>123456.789</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_clbr1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>CLBR1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lab_clb0">
+            <property name="font">
+             <font>
+              <family>Noto Mono</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>123456.789</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_clbr0">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>CLBR0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QLabel" name="lab_clb3">
+            <property name="font">
+             <font>
+              <family>Noto Mono</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>123456.789</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_clbr3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>CLBR3</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lab_clb2">
+            <property name="font">
+             <font>
+              <family>Noto Mono</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>123456.789</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_clbr2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>CLBR2</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QLabel" name="lab_adc_code">
+            <property name="font">
+             <font>
+              <family>Noto Mono</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>123456.789</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lab_adc_txt">
+            <property name="text">
+             <string>ADC</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lab_zero">
+            <property name="font">
+             <font>
+              <family>Noto Mono</family>
+             </font>
+            </property>
+            <property name="text">
+             <string>-1234.56kg</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pb_zero">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>16</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>ZERO</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="manu_page">
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="hl_4">
+          <item>
+           <widget class="QPushButton" name="pb_logo_right">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -885,7 +884,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_12">
+           <spacer name="hs_3">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -898,7 +897,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="ManuTxtLabel">
+           <widget class="QLabel" name="lab_manu">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -915,7 +914,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer">
+           <spacer name="hs_2">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -928,7 +927,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="ClbrPushButtonL">
+           <widget class="QPushButton" name="pb_clbr_left">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -942,9 +941,9 @@
          </layout>
         </item>
         <item row="1" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <layout class="QHBoxLayout" name="hl">
           <item>
-           <widget class="QRadioButton" name="InpRadioButton0">
+           <widget class="QRadioButton" name="rb_inp0">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -957,7 +956,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="InpRadioButton1">
+           <widget class="QRadioButton" name="rb_inp1">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -970,7 +969,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="InpRadioButton2">
+           <widget class="QRadioButton" name="rb_inp2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -983,7 +982,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="InpRadioButton3">
+           <widget class="QRadioButton" name="rb_inp3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -996,7 +995,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="InpRadioButton4">
+           <widget class="QRadioButton" name="rb_inp4">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1009,7 +1008,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="InpRadioButton5">
+           <widget class="QRadioButton" name="rb_inp5">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1022,7 +1021,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="InpRadioButton6">
+           <widget class="QRadioButton" name="rb_inp6">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1035,7 +1034,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="InpRadioButton7">
+           <widget class="QRadioButton" name="rb_inp7">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1050,9 +1049,9 @@
          </layout>
         </item>
         <item row="2" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <layout class="QHBoxLayout" name="hl_2">
           <item>
-           <widget class="QRadioButton" name="OutRadioButton6">
+           <widget class="QRadioButton" name="rb_out6">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1065,7 +1064,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="OutRadioButton7">
+           <widget class="QRadioButton" name="rb_out7">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1078,7 +1077,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="OutRadioButton8">
+           <widget class="QRadioButton" name="rb_out8">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1091,7 +1090,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="OutRadioButton9">
+           <widget class="QRadioButton" name="rb_out9">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1104,7 +1103,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="OutRadioButtonA">
+           <widget class="QRadioButton" name="rb_outa">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1117,7 +1116,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="OutRadioButtonB">
+           <widget class="QRadioButton" name="rb_outb">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1130,7 +1129,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="OutRadioButtonC">
+           <widget class="QRadioButton" name="rb_outc">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1143,7 +1142,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="OutRadioButtonD">
+           <widget class="QRadioButton" name="rb_outd">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -1159,12 +1158,12 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="LogoPage">
+      <widget class="QWidget" name="logo_page">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <layout class="QHBoxLayout" name="hl_3">
           <item>
-           <widget class="QPushButton" name="MainPushButtonR">
+           <widget class="QPushButton" name="pb_main_right">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -1176,7 +1175,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_5">
+           <spacer name="hs_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -1189,7 +1188,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="LogoTxtLabel">
+           <widget class="QLabel" name="lab_logo">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -1206,7 +1205,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_4">
+           <spacer name="hs_5">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -1219,7 +1218,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="ManuPushButtonL">
+           <widget class="QPushButton" name="pb_manu_left">
             <property name="font">
              <font>
               <pointsize>16</pointsize>
@@ -1233,9 +1232,9 @@
          </layout>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout_4">
+         <layout class="QGridLayout" name="gl">
           <item row="0" column="0" colspan="2">
-           <widget class="QLabel" name="DvaTxtLabel">
+           <widget class="QLabel" name="lab_dva_tkm">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1248,7 +1247,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLabel" name="VersionLabel">
+           <widget class="QLabel" name="lab_version">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1261,14 +1260,14 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QRadioButton" name="MasterRadioButton">
+           <widget class="QRadioButton" name="rb_master">
             <property name="text">
              <string>Master Bit</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="CheckSumLabel">
+           <widget class="QLabel" name="lab_cheksum">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1281,7 +1280,7 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <spacer name="verticalSpacer">
+           <spacer name="vs">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
@@ -1297,7 +1296,7 @@
            </spacer>
           </item>
           <item row="3" column="1">
-           <widget class="QLabel" name="TokomTxtLabel">
+           <widget class="QLabel" name="lab_tokom">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1310,7 +1309,7 @@
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QLabel" name="MailTxtLabel">
+           <widget class="QLabel" name="lab_mail">
             <property name="text">
              <string>tokom2009@gmail.com</string>
             </property>
@@ -1326,9 +1325,9 @@
      </widget>
     </item>
    </layout>
-   <zorder>PhaseLabel</zorder>
-   <zorder>stackedWidget</zorder>
-   <zorder>WeightLabel</zorder>
+   <zorder>lab_phase</zorder>
+   <zorder>sw_pages</zorder>
+   <zorder>lab_weight</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="sizePolicy">
@@ -1344,7 +1343,7 @@
      <x>0</x>
      <y>0</y>
      <width>480</width>
-     <height>26</height>
+     <height>32</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1353,7 +1352,7 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <widget class="QMenu" name="menuCLBR">
+   <widget class="QMenu" name="menu_clbr">
     <property name="font">
      <font>
       <pointsize>12</pointsize>
@@ -1362,7 +1361,7 @@
     <property name="title">
      <string>CLBR</string>
     </property>
-    <widget class="QMenu" name="menuRep">
+    <widget class="QMenu" name="menu_rep">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -1371,27 +1370,27 @@
      <property name="title">
       <string>Rep</string>
      </property>
-     <addaction name="RepAction0"/>
-     <addaction name="RepAction1"/>
-     <addaction name="RepAction2"/>
-     <addaction name="RepAction3"/>
+     <addaction name="action_rep0"/>
+     <addaction name="action_rep1"/>
+     <addaction name="action_rep2"/>
+     <addaction name="action_rep3"/>
     </widget>
-    <widget class="QMenu" name="menuClb">
+    <widget class="QMenu" name="menu_clb">
      <property name="title">
       <string>Clb</string>
      </property>
-     <addaction name="ClbAction0"/>
-     <addaction name="ClbAction1"/>
-     <addaction name="ClbAction2"/>
-     <addaction name="ClbAction3"/>
+     <addaction name="action_clb0"/>
+     <addaction name="action_clb1"/>
+     <addaction name="action_clb2"/>
+     <addaction name="action_clb3"/>
     </widget>
-    <addaction name="menuRep"/>
-    <addaction name="menuClb"/>
-    <addaction name="PcsNAction"/>
-    <addaction name="RoundAction"/>
-    <addaction name="MasterAction"/>
+    <addaction name="menu_rep"/>
+    <addaction name="menu_clb"/>
+    <addaction name="action_pcsn"/>
+    <addaction name="action_round"/>
+    <addaction name="action_master"/>
    </widget>
-   <widget class="QMenu" name="menuCONF">
+   <widget class="QMenu" name="menu_conf">
     <property name="font">
      <font>
       <pointsize>12</pointsize>
@@ -1400,7 +1399,7 @@
     <property name="title">
      <string>CONF</string>
     </property>
-    <widget class="QMenu" name="menuTIME">
+    <widget class="QMenu" name="menu_time">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -1409,49 +1408,49 @@
      <property name="title">
       <string>TIME</string>
      </property>
-     <addaction name="actionUnld"/>
-     <addaction name="actionPreFeed"/>
-     <addaction name="actionPreMeas"/>
-     <addaction name="actionBtmChk"/>
-     <addaction name="actionShrtTMO"/>
-     <addaction name="actionLongTMO"/>
-     <addaction name="actionSleep"/>
-     <addaction name="actionReady"/>
-     <addaction name="actionCycle"/>
-     <addaction name="actionTSmin"/>
+     <addaction name="action_unld"/>
+     <addaction name="action_pre_feed"/>
+     <addaction name="action_pre_meas"/>
+     <addaction name="action_btm_chk"/>
+     <addaction name="action_shrt_tmo"/>
+     <addaction name="action_long_tmo"/>
+     <addaction name="action_sleep"/>
+     <addaction name="action_ready"/>
+     <addaction name="action_cycle"/>
+     <addaction name="action_t_s_min"/>
     </widget>
-    <widget class="QMenu" name="menuWEIGHT">
+    <widget class="QMenu" name="menu_weight">
      <property name="title">
       <string>WEIGHT</string>
      </property>
-     <addaction name="actionDoza"/>
-     <addaction name="actionUpr1"/>
-     <addaction name="actionUpr2"/>
-     <addaction name="actionDozZ"/>
-     <addaction name="actionTarZ"/>
+     <addaction name="action_doza"/>
+     <addaction name="action_upr1"/>
+     <addaction name="action_upr2"/>
+     <addaction name="action_dozz"/>
+     <addaction name="action_tarz"/>
     </widget>
-    <widget class="QMenu" name="menuNNN">
+    <widget class="QMenu" name="menu_nnn">
      <property name="title">
       <string>NNN</string>
      </property>
-     <addaction name="actionDebounce"/>
-     <addaction name="actionTareSkip"/>
-     <addaction name="actionFilterNN"/>
+     <addaction name="action_debounce"/>
+     <addaction name="action_tare_skip"/>
+     <addaction name="action_filter_fs"/>
      <addaction name="actionAdapt"/>
     </widget>
-    <widget class="QMenu" name="menuFLAGS">
+    <widget class="QMenu" name="menu_flags">
      <property name="title">
       <string>FLAGS</string>
      </property>
-     <addaction name="actionAutoCycle"/>
-     <addaction name="actionAutoStart"/>
+     <addaction name="action_auto_cycle"/>
+     <addaction name="action_auto_start"/>
     </widget>
-    <addaction name="menuTIME"/>
-    <addaction name="menuWEIGHT"/>
-    <addaction name="menuNNN"/>
-    <addaction name="menuFLAGS"/>
+    <addaction name="menu_time"/>
+    <addaction name="menu_weight"/>
+    <addaction name="menu_nnn"/>
+    <addaction name="menu_flags"/>
    </widget>
-   <widget class="QMenu" name="menuOPER">
+   <widget class="QMenu" name="menu_oper">
     <property name="font">
      <font>
       <pointsize>12</pointsize>
@@ -1461,7 +1460,7 @@
      <string>OPER</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuPORT">
+   <widget class="QMenu" name="menu_port">
     <property name="font">
      <font>
       <pointsize>12</pointsize>
@@ -1471,7 +1470,7 @@
      <string>PORT</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuQuit">
+   <widget class="QMenu" name="menu_quit">
     <property name="font">
      <font>
       <pointsize>12</pointsize>
@@ -1480,16 +1479,16 @@
     <property name="title">
      <string>Quit</string>
     </property>
-    <addaction name="actionAbout"/>
-    <addaction name="actionExit"/>
+    <addaction name="action_about"/>
+    <addaction name="action_exit"/>
    </widget>
-   <addaction name="menuCLBR"/>
-   <addaction name="menuCONF"/>
-   <addaction name="menuOPER"/>
-   <addaction name="menuPORT"/>
-   <addaction name="menuQuit"/>
+   <addaction name="menu_clbr"/>
+   <addaction name="menu_conf"/>
+   <addaction name="menu_oper"/>
+   <addaction name="menu_port"/>
+   <addaction name="menu_quit"/>
   </widget>
-  <action name="PcsNAction">
+  <action name="action_pcsn">
    <property name="text">
     <string>PcsN</string>
    </property>
@@ -1497,7 +1496,7 @@
     <font/>
    </property>
   </action>
-  <action name="RoundAction">
+  <action name="action_round">
    <property name="text">
     <string>Round</string>
    </property>
@@ -1505,7 +1504,7 @@
     <font/>
    </property>
   </action>
-  <action name="RepAction0">
+  <action name="action_rep0">
    <property name="text">
     <string>0</string>
    </property>
@@ -1513,7 +1512,7 @@
     <font/>
    </property>
   </action>
-  <action name="RepAction1">
+  <action name="action_rep1">
    <property name="text">
     <string>1</string>
    </property>
@@ -1521,7 +1520,7 @@
     <font/>
    </property>
   </action>
-  <action name="RepAction2">
+  <action name="action_rep2">
    <property name="text">
     <string>2</string>
    </property>
@@ -1529,7 +1528,7 @@
     <font/>
    </property>
   </action>
-  <action name="RepAction3">
+  <action name="action_rep3">
    <property name="text">
     <string>3</string>
    </property>
@@ -1537,7 +1536,7 @@
     <font/>
    </property>
   </action>
-  <action name="ClbAction0">
+  <action name="action_clb0">
    <property name="text">
     <string>0</string>
    </property>
@@ -1545,7 +1544,7 @@
     <font/>
    </property>
   </action>
-  <action name="ClbAction1">
+  <action name="action_clb1">
    <property name="text">
     <string>1</string>
    </property>
@@ -1553,7 +1552,7 @@
     <font/>
    </property>
   </action>
-  <action name="ClbAction2">
+  <action name="action_clb2">
    <property name="text">
     <string>2</string>
    </property>
@@ -1561,7 +1560,7 @@
     <font/>
    </property>
   </action>
-  <action name="ClbAction3">
+  <action name="action_clb3">
    <property name="text">
     <string>3</string>
    </property>
@@ -1569,7 +1568,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionUnld">
+  <action name="action_unld">
    <property name="text">
     <string>Unld</string>
    </property>
@@ -1577,7 +1576,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionPreFeed">
+  <action name="action_pre_feed">
    <property name="text">
     <string>PreFeed</string>
    </property>
@@ -1585,7 +1584,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionPreMeas">
+  <action name="action_pre_meas">
    <property name="text">
     <string>preMeas</string>
    </property>
@@ -1593,7 +1592,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionBtmChk">
+  <action name="action_btm_chk">
    <property name="text">
     <string>BtmChk</string>
    </property>
@@ -1601,7 +1600,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionShrtTMO">
+  <action name="action_shrt_tmo">
    <property name="text">
     <string>ShrtTMO</string>
    </property>
@@ -1609,7 +1608,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionLongTMO">
+  <action name="action_long_tmo">
    <property name="text">
     <string>LongTMO</string>
    </property>
@@ -1617,7 +1616,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionSleep">
+  <action name="action_sleep">
    <property name="text">
     <string>Sleep</string>
    </property>
@@ -1625,7 +1624,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionReady">
+  <action name="action_ready">
    <property name="text">
     <string>Ready</string>
    </property>
@@ -1633,7 +1632,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionCycle">
+  <action name="action_cycle">
    <property name="text">
     <string>Cycle</string>
    </property>
@@ -1641,7 +1640,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionTSmin">
+  <action name="action_t_s_min">
    <property name="text">
     <string>TSmin</string>
    </property>
@@ -1649,7 +1648,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionDoza">
+  <action name="action_doza">
    <property name="text">
     <string>Doza</string>
    </property>
@@ -1657,7 +1656,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionUpr1">
+  <action name="action_upr1">
    <property name="text">
     <string>Upr1</string>
    </property>
@@ -1665,7 +1664,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionUpr2">
+  <action name="action_upr2">
    <property name="text">
     <string>Upr2</string>
    </property>
@@ -1673,7 +1672,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionDozZ">
+  <action name="action_dozz">
    <property name="text">
     <string>DozZ</string>
    </property>
@@ -1681,7 +1680,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionTarZ">
+  <action name="action_tarz">
    <property name="text">
     <string>TarZ</string>
    </property>
@@ -1689,7 +1688,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionDebounce">
+  <action name="action_debounce">
    <property name="text">
     <string>Debounce</string>
    </property>
@@ -1697,7 +1696,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionTareSkip">
+  <action name="action_tare_skip">
    <property name="text">
     <string>TareSkip</string>
    </property>
@@ -1705,7 +1704,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionAutoCycle">
+  <action name="action_auto_cycle">
    <property name="text">
     <string>AutoCycle</string>
    </property>
@@ -1713,7 +1712,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionAutoStart">
+  <action name="action_auto_start">
    <property name="text">
     <string>AutoStart</string>
    </property>
@@ -1721,7 +1720,7 @@
     <font/>
    </property>
   </action>
-  <action name="actionFilterNN">
+  <action name="action_filter_fs">
    <property name="text">
     <string>FilterNN</string>
    </property>
@@ -1737,17 +1736,17 @@
     <font/>
    </property>
   </action>
-  <action name="MasterAction">
+  <action name="action_master">
    <property name="text">
     <string>Master Bit</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="action_about">
    <property name="text">
     <string>About</string>
    </property>
   </action>
-  <action name="actionExit">
+  <action name="action_exit">
    <property name="text">
     <string>Exit</string>
    </property>

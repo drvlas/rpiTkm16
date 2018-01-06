@@ -19,7 +19,7 @@ import modbus_tk.modbus_rtu as mb_rtu
 import modbus_tk.utils as mb_utils
 import serial
 
-from brd14Descriptor import *
+from descriptor import *
 
 # Open for MB diagnostics.
 # When setLevel(logging.DEBUG):
