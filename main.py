@@ -9,14 +9,15 @@
 """
 import sys
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, QPoint
 from PyQt5.QtWidgets import QMainWindow, QApplication, QInputDialog, QMenu
 from PyQt5 import QtWidgets
 
 from ui.numpad import Numpad, VALID, VAL, PNT, SGN
 from modbus import *
-from descriptor import nregs  # ctrl_cmd, adc_bits, adc_rg,  adc_io does not import descriptor
-from data import bauds, ports, point_table, RIGHT_SHIFT, LEFT_SHIFT, pointFormat5, pointFormat9, fixed_point
+from descriptor import nregs, npars  # ctrl_cmd, adc_bits, adc_rg,  adc_io does not import descriptor
+from data import bauds, ports, point_table, RIGHT_SHIFT, LEFT_SHIFT, pointFormat5, pointFormat9, fixed_point, FORMATSHRT, FORMATHEX
 from data import MAIN_PAGE, PARS_PAGE, CLBR_PAGE, MANU_PAGE, LOGO_PAGE
 from qt_window import Ui_Window
 
@@ -39,9 +40,7 @@ class Main(QMainWindow, Ui_Window):
         self.setupUi(self)
         QMainWindow.setFixedSize(self, x_app, y_app)
         self.sw_pages.setCurrentIndex(0)
-        #self.statusbar.showMessage(greeting)
         # Serial port
-        self.port_opened = False
         self.baud = bauds[6]
         self.port = ports[0]                # Default Linux port name
         self.slave = 1                      # Default Slave ID
@@ -52,10 +51,10 @@ class Main(QMainWindow, Ui_Window):
         # Main loop settings
         self.refresh = QTimer()             # refresh.singleShot() is used for update data rate
         self.status_freeze_timer = QTimer()
-        self.status2freeze = False
+        self.status_is_free = True
         self.requests_stopped = False       # During port setting dialog request are stopped
         self.modbus_count = 0
-        print('Read from Map nregs:', nregs)
+        print("Mapped ", npars, " parameter descriptors to ", nregs, " registers")
         self.inpBin = ()                    # To accept data from ADC
         self.io = None                      # Modbus channel will be opened later
         # Main Loop
@@ -67,57 +66,44 @@ class Main(QMainWindow, Ui_Window):
         if self.requests_stopped:
             self.refresh.singleShot(400, self.update_data)
             return  # To allow dialogs run undisturbed
-        if not self.port_opened:
-            #self.status_refresh('INFO: Port is not opened. Refreshing stopped')
+        if not self.io:
             try:
-                logging.info('update data(): opening port {:s}, baud {:d}'.format(self.port,
-                                                                                  self.baud))
+                logging.info('update data(): opening {:s} : {:d}'.format(self.port, self.baud))
                 self.io = ModbusChannel(self.port, self.baud)
-                self.port_opened = True
-            except:
-                self.status_refresh('ERROR: Port opening fault')
-                self.refresh.singleShot(1000, self.update_data)
+            except (OSError, FileNotFoundError, serial.SerialException):
+                print("Serial port cannot be opened")
+                self.status_refresh('ERROR1: Port opening fault', 2000)
                 return
-        # This text will begin the status line
-        tx0 = 'Port:{:s}, SlaveID:{:d}, baud:{:d} count: {:d} {:d}'.format(self.port, self.slave,
-                                                                      self.baud, self.modbus_count, self.sw_pages.currentIndex())
-        txt, self.inpBin = self.io.get_db(self.slave, 0, nregs)
+        # MODBUS: read all registers as double regs
+        txt, self.inpBin = self.io.read_dregs(self.slave, 0, nregs)
+        # END OF MODBUS
         self.modbus_count += 1
         if 'error' in txt.lower():  # Modbus command execution error (no link?)
-            self.status_refresh('{:s}INFO: modbus error: {:s}'.format(tx0, txt))
-            self.port_opened = False
-            self.refresh.singleShot(2000, self.update_data)  # 2000
+            self.status_refresh('ERROR2: {:s}'.format(txt), 2000)
             return
-        elif 'code' in txt.lower():  # %s- Code=%d
-            self.status_refresh('{:s}INFO: modbus error: {:s}'.format(tx0, txt))
-            self.port_opened = False
-            self.refresh.singleShot(2000, self.update_data)  # 2000
+        if 'code' in txt.lower():  # %s- Code=%d
+            self.status_refresh('ERROR3: {:s}'.format(txt), 2000)
             return
-        # From here there is no any error. So default update rate may be set
-        # if self.ui_stopped:
-        #     self.refresh.singleShot(1000, self.update_data)
-        #     self.status_refresh('Refreshing stopped')
-        #     return
         if txt is not '':
-            self.freeze_status('Error: {:s}'.format(txt))
-            self.refresh.singleShot(1000, self.update_data)
+            self.status_refresh('ERROR4: {:s}'.format(txt), 2000)
             return
-        self.status_refresh(tx0)
-        self.refresh.singleShot(100, self.update_data)
-        self.morda(self.inpBin)
+        txt = 'Port:{:s} : {:d} Slave:{:d} Count: {:d}'.format(self.port, self.baud, self.slave, self.modbus_count)
+        self.status_refresh(txt, 100)
+        self.fill_window()
 
-    def morda(self, rg):                # Це, по суті, просто шматок (закінчення) update_data()
-        statusRg = rg[adcRg['STAT'][0]]
-        ctrlRg = rg[adcRg['CTRL'][0]]
+    def fill_window(self):
+        rg = self.inpBin
+        statusRg = rg[adcRg['STAT'][RG_REGNUM]]
+        ctrlRg = rg[adcRg['CTRL'][RG_REGNUM]]
         form5 = pointFormat5[fixed_point][0]
         deci5 = pointFormat5[fixed_point][1]
         form9 = pointFormat9[fixed_point][0]
         deci9 = pointFormat9[fixed_point][1]
         # Fill widgets
-        phase = rg[adcRg['PHASE'][0]]
+        phase = rg[adcRg['PHASE'][RG_REGNUM]]
         txt = "{:02d}: {:s}".format(phase, phaseText[phase])
         self.lab_phase.setText(txt)
-        weight = rg[adcRg['WEI16'][0]]
+        weight = rg[adcRg['WEI16'][RG_REGNUM]]
         txt = form5.format(weight * deci5)
         self.lab_weight.setText(txt + "kg")
         self.rb_lev0.setChecked(statusRg & adcBit['LEV0MSK'])
@@ -125,7 +111,7 @@ class Main(QMainWindow, Ui_Window):
         self.rb_lev2.setChecked(statusRg & adcBit['LEV2MSK'])
         self.rb_over.setChecked(statusRg & adcBit['OVERMSK'])
         self.rb_stab.setChecked(statusRg & adcBit['STABMSK'])
-        tare = rg[adcRg['TARE'][0]]
+        tare = rg[adcRg['TARE'][RG_REGNUM]]
         txt = form5.format(tare * deci5)
         if tare == 0:
             self.rb_tare.setChecked(False)
@@ -134,30 +120,37 @@ class Main(QMainWindow, Ui_Window):
         # Switch by page number
         curr_ind = self.sw_pages.currentIndex()
         if curr_ind == MAIN_PAGE:
-            weight = rg[adcRg['DOZA1'][0]]
-            txt = form5.format(weight * deci5)
-            self.lab_dose.setText(txt + "kg")
-            weight = rg[adcRg['DOZA1'][0]]
-            txt = form9.format(weight * deci9)
-            self.lab_total.setText(form9.format(deci9*rg[adcRg['TOTW'][0]]) + 'kg')
+            weight = rg[adcRg['DOZA1'][RG_REGNUM]]
+            txt = form5.format(weight*deci5)
+            self.lab_dose.setText(txt+"kg")
+            self.lab_total.setText(form9.format(deci9*rg[adcRg['TOTW'][RG_REGNUM]]) + 'kg')
         elif curr_ind == PARS_PAGE:
-            parn = rg[adcRg['PARN'][0]]
-            parv= 0
+            regn = adcRg['PARN'][RG_REGNUM]         # PARN in rg[] buffer keeps curr par regn
+            parn = rg[regn]                         # Current Par number
+            parv= rg[adcRg['PARV'][RG_REGNUM]]      # Current Par value (Slave keeps control)
             key = ''
             for key in adcRg:
-                if adcRg[key][0] == parn:
-                    parv = rg[parn]
+                if adcRg[key][RG_PARNUM] == parn:
+                    # parv = rg[parn]
                     break
-            self.lab_parameter.setText("{:02d}: ".format(parn) + key + " = {:d} ".format(parv))
+            pnt = adcRg[key][RG_POINT]
+            if pnt > 9 or pnt < -1:
+                print("Error: point = ", pnt)
+            form = point_table[pnt][FORMATSHRT]
+            if adcRg[key][RG_DECHEX] == 16:
+                form = point_table[pnt][FORMATHEX]
+            deci = point_table[pnt][RIGHT_SHIFT]
+            self.lab_parname.setText("{:02d}: ".format(parn) + key)
+            self.lab_parameter.setText(form.format(parv*deci))
         elif curr_ind == CLBR_PAGE:
-            self.lab_clb0.setText("{:011.3f}".format(0.001*rg[adcRg['CLB0'][0]]))
-            self.lab_clb1.setText("{:011.3f}".format(0.001*rg[adcRg['CLB1'][0]]))
-            self.lab_clb2.setText("{:011.3f}".format(0.001*rg[adcRg['CLB2'][0]]))
-            self.lab_clb3.setText("{:011.3f}".format(0.001*rg[adcRg['CLB3'][0]]))
-            self.lab_adc_code.setText("{:011.3f}".format(0.001*rg[adcRg['ADC'][0]]))
-            self.lab_zero.setText(pointFormat5[fixed_point][0].format(pointFormat5[fixed_point][1]*rg[adcRg['ZERO'][0]]/256) + "kg")
+            self.lab_clb0.setText("{:011.3f}".format(0.001*rg[adcRg['CLB0'][RG_REGNUM]]))
+            self.lab_clb1.setText("{:011.3f}".format(0.001*rg[adcRg['CLB1'][RG_REGNUM]]))
+            self.lab_clb2.setText("{:011.3f}".format(0.001*rg[adcRg['CLB2'][RG_REGNUM]]))
+            self.lab_clb3.setText("{:011.3f}".format(0.001*rg[adcRg['CLB3'][RG_REGNUM]]))
+            self.lab_adc_code.setText("{:011.3f}".format(0.001*rg[adcRg['ADC'][RG_REGNUM]]))
+            self.lab_zero.setText(pointFormat5[fixed_point][0].format(pointFormat5[fixed_point][1]*rg[adcRg['ZERO'][RG_REGNUM]]/256) + "kg")
         elif curr_ind == MANU_PAGE:
-            dio = rg[adcRg['CLB0'][0]]
+            dio = rg[adcRg['CLB0'][RG_REGNUM]]
             self.rb_inp0.setChecked(dio & 1)
             self.rb_inp1.setChecked(dio & 2)
             self.rb_inp2.setChecked(dio & 4)
@@ -176,25 +169,76 @@ class Main(QMainWindow, Ui_Window):
             self.rb_outd.setChecked(dio & 8192)
         elif curr_ind == LOGO_PAGE:
             self.lab_dva_tkm.setText("DVA TKM16 Batch Weigher Controler")
-            self.lab_version.setText("Program version: " + "{:d}".format(rg[adcRg['V_SN'][0]]))
+            self.lab_version.setText("Program version: " + "{:d}".format(rg[adcRg['V_SN'][RG_REGNUM]]))
             self.rb_master.setChecked(statusRg & adcBit['DOSTUPMSK'])
-            #self.CheckSumLabel.setText("Check Sum " + "0x{: 08X}".format(rg[adcRg['CASH'][0]]))
-            self.lab_cheksum.setText("Check Sum: " + "{:d}".format(rg[adcRg['CASH'][0]]))
+            self.lab_cheksum.setText("Check Sum: " + "{:d}".format(rg[adcRg['CASH'][RG_REGNUM]]))
             self.lab_tokom.setText("TOKOM, Kyiv-2018")
             self.lab_mail.setText("tokom2009@gmail.com")
         else:
             print("Page index out of range: " + "{:%d}".format(curr_ind))
 
-    # @pyqtSlot()
-    def show_numpad(self, key):
+    """ ************************************************************************************* 
+                                NUMERICAL ENTRY (most of signals lead here)
+        *************************************************************************************
+    """
+    def set_parv(self):         # Enter new value to a Par with the number in PARN
+        rg = self.inpBin
+        parn = rg[adcRg['PARN'][RG_REGNUM]]  # Current Par number
+        #parv = rg[adcRg['PARV'][RG_REGNUM]]  # Current Par value (Slave keeps control)
+        mini = rg[adcRg['MINI'][RG_REGNUM]]
+        maxi = rg[adcRg['MAXI'][RG_REGNUM]]
+        key = ''
+        for key in adcRg:
+            if adcRg[key][RG_PARNUM] == parn:
+                # parv = rg[parn]
+                break
+        self.enter_numeric(key, mini, maxi)
+
+    def enter_numeric(self, key, mi=0, ma=999999999):
         # TODO: request Min and Max from ADC, add Point to tables (data.py?)
-        indx = adcRg[key][0]
-        print(indx)
-        val = self.inpBin[indx]
-        #val = self.inpBin[adcRg[key][0]]
-        mi = -999999999
-        ma = 999999999
-        rg_pnt = 2
+        rnum = adcRg[key][RG_REGNUM]
+        print("RegNum=", rnum)
+        val = self.inpBin[rnum]
+        #val = self.inpBin[adcRg[key][RG_REGNUM]]
+        rg_pnt = adcRg[key][RG_POINT]
+        si = 1
+        np = Numpad(mi=mi, ma=ma, va=val, po=rg_pnt, si=si)
+        np.exec_()
+        print("Numpad answer: ", np.answer)  # DEBUG
+        np.close()
+        if (len(np.answer) != 0) and (np.answer[VALID] == 1):
+            val = np.answer[VAL]
+            point = np.answer[PNT]
+            sign = np.answer[SGN]
+            if point < 0:
+                point = 0  # Value -1 means zero (as no point was pressed)
+            if rg_pnt < 0:
+                rg_pnt = 0  # Value -1 means zero (as no point was pressed)
+            if point > rg_pnt:
+                mult = point_table[point - rg_pnt][RIGHT_SHIFT]
+                val *= mult
+            elif point < rg_pnt:
+                mult = point_table[rg_pnt - point][LEFT_SHIFT]
+                val *= int(mult)
+            a_half = 0.5
+            if sign == -1:
+                val = -val
+                a_half = -0.5
+            if val < mi:
+                val = mi
+            elif val > ma:
+                val = ma
+            else:
+                val = int(val + a_half)
+        self.check_push_reg(key, int(val))  # ADC registers are always INTEGER
+    """
+    def enter_parnum(self):
+        key = 'PARN'
+        rnum = adcRg[key][RG_REGNUM]
+        print("RegNum=", rnum)
+        val = self.inpBin[rnum]
+        #val = self.inpBin[adcRg[key][RG_REGNUM]]
+        rg_pnt = adcRg[key][RG_POINT]
         si = 1
         np = Numpad(mi=mi, ma=ma, va=val, po=rg_pnt, si=si)
         np.exec_()
@@ -222,54 +266,136 @@ class Main(QMainWindow, Ui_Window):
                 val = ma
             else:
                 val = int(val + a_half)
-        self.write_rg(key, int(val))  # But the ADC registers are always INTEGERs
+        self.check_push_reg(key, int(val))  # ADC registers are always INTEGER
+        """
 
-    def write_rg(self, c, v):   # c - conf text (adc descriptor), t - entered editLine text
-        logging.info("In write_rg: c={:s} v={:d}".format(c, v))
+    """ ************************************************************************************* 
+                                WRITE REGISTERS TO SLAVE
+        *************************************************************************************
+    """
+    def check_push_reg(self, key, v):   # c - conf text (adc descriptor), t - entered editLine text
+        logging.info("In write_rg: c={:s} v={:d}".format(key, v))
         try:
-            b = adcRg[c][0]                       # Register number (b - begin)
+            b = adcRg[key][RG_REGNUM]                       # Register number (b - begin)
         except LookupError:
-            txt = 'PROG ERROR: set_ctrl_bit(): No par \'{:s}\' in ADC descriptor'.format(c)
+            txt = 'PROG ERROR: set_ctrl_bit(): No par \'{:s}\' in ADC descriptor'.format(key)
             logging.error(txt)
             return
-        dostup_set = 0 != self.inpBin[adcRg['STAT'][0]] & adcBit['DOSTUPMSK']
-        master_protected = 'MB' == adcRg[c][2][3:]
+        dostup_set = (self.inpBin[adcRg['STAT'][RG_REGNUM]] & adcBit['DOSTUPMSK'] != 0)
+        access = adcRg[key][RG_ACCESS]
+        master_protected = (access[3:] is 'MB')
         if master_protected and (not dostup_set):
             txt = 'USER ERROR: write_rg(): Rg{:d} is Masterbit protected'.format(b)
             logging.error(txt)
-            self.freeze_status(txt)
+            self.hold_status(txt)
             return
-        if adcRg[c][2] == 'ReadO':
+        if access == 'ReadO':
             txt = 'USER ERROR: write_rg(): Rg{:d} is READ ONLY'.format(b)
             logging.error(txt)
-            self.freeze_status(txt)
+            self.hold_status(txt)
             return
-        elif (adcRg[c][2][:3] == 'Cle') and (v != 0):
+        elif (access[:3] == 'Cle') and (v != 0):
             txt = 'USER ERROR: write_rg(): Rg{:d} is CLEAR ONLY'.format(b)
             logging.error(txt)
-            self.freeze_status(txt)
+            self.hold_status(txt)
             return
-        elif (adcRg[c][2][:3] == 'Wri') or (adcRg[c][2][:3] == 'Cle'):
-            if adcRg[c][1] is 0:          # simple register
-                t, b = self.io.write_rg(self.slave, b, v)
+        elif (access[:3] == 'Wri') or (access[:3] == 'Cle'):
+            if adcRg[key][RG_DOUBLE] is 0:          # simple register
+                t, b = self.io.write_regs(self.slave, b, v)
                 if t is not '':
                     txt = 'HARDWARE ERROR: io.write_rg() returns error: {:s}'.format(t)
                     logging.error(txt)
-                    self.freeze_status(txt)
+                    self.hold_status(txt)
                     return
-            else:                       # double register
-                t, b = self.io.write_db(self.slave, b, v)
+            else:                                   # double register
+                t, b = self.io.write_dregs(self.slave, b, v)
                 if t is not '':
                     txt = 'HARDWARE ERROR: io.write_db() returns error: {:s}'.format(t)
                     logging.error(txt)
-                    self.freeze_status(txt)
+                    self.hold_status(txt)
                     return
             return
         else:               # No more siutable cases
             txt = 'PROG ERROR: write_rg(): Rg{:d} is of unknown type'.format(b)
-            self.freeze_status(txt)
+            self.hold_status(txt)
             return
 
+    """
+    Radio buttons and push keys without numpad entry lead here
+    Since branch RpiTkm16 there is no more CTRL bit-wise commands.
+    All commands are being sent via KEYS register. All checking is laid on the uPLC (Slave)
+    Note: KEYS register NEVER keeps bits. As far as the command is get, the bit in the register
+    is resert - not depending on will it be accepted or rejected afterwards
+    So, send_key() ALWAYS sends a 1-bit register. 
+    """
+    def send_key(self, c):      # c - keyBit text key ('K_KEYS' etc).
+        r = adcRg['KEYS'][RG_REGNUM]  # Register number is const in this method
+        try:
+            bit = keyBit[c]  # bit number 0...23
+        except LookupError:
+            txt = 'USER ERROR: sendKey(): No bit \'{:s}\' in KEYS register'.format(c)
+            logging.info(txt)
+            self.hold_status(txt)
+            return
+        print('try to set bit: ', 32 * r + bit)
+        t, b = self.io.write_coils(self.slave, 32 * r + bit, 1)
+        if t is not '':
+            txt = 'HARDWARE ERROR: io.write_coil() returns error: {:s}'.format(t)
+            logging.error(txt)
+            self.hold_status(txt)
+        return
+
+    """ ************************************************************************************* 
+                                BIT TOGGLE: set via bit, reset via register
+        *************************************************************************************
+    """
+    def tare_toggle(self):
+        if self.inpBin[adcRg['TARE'][RG_REGNUM]] == 0:
+            self.send_key('K_TARE')                 # Take tare via KEYS command
+            # self.write_ctrl_bit('TAREBIT', 1)     # Take tare via CTRL command
+        else:
+            self.check_push_reg('TARE', 0)          # reset tare to Null
+
+    def zero_toggle(self):
+        if self.inpBin[adcRg['ZERO'][RG_REGNUM]] == 0:
+            self.send_key('K_ZERO')
+            # self.write_ctrl_bit('ZEROBIT', 1)
+        else:
+            self.check_push_reg('ZERO', 0)          # reset zero to Null
+
+    def fast_toggle(self):
+        ctrl = self.inpBin[adcRg['CTRL'][RG_REGNUM]]
+        if ctrl & adcBit['FASTMSK'] == 0:
+            print('Fast mode ADC')
+            self.send_key('K_FAST')
+            # self.write_ctrl_bit('FASTBIT', 1)
+        else:
+            print('Slow mode ADC (default)')
+            self.check_push_reg('CTRL', ctrl | adcBit['FASTMSK'])  # reset FAST bit
+            # self.write_ctrl_bit('FASTBIT', 0)
+
+    """ ************************************************************************************* 
+                                STATUS LINE CONTROL
+        *************************************************************************************
+    """
+    def hold_status(self, msg):
+        self.status_is_free = False
+        self.status_freeze_timer.singleShot(4000, self.free_status)
+        self.statusbar.showMessage(msg)
+
+    def free_status(self):
+        self.status_is_free = True
+
+    def status_refresh(self, msg, next_update):
+        if self.status_is_free:
+            self.statusbar.showMessage(msg)
+        self.refresh.singleShot(next_update, self.update_data)
+
+    """ ************************************************************************************* 
+                                S I G N A L S
+        *************************************************************************************
+    """
+    # Page control buttons
     def on_pb_main_left_pressed(self): print("main_left"); self.sw_pages.setCurrentIndex(MAIN_PAGE)
 
     def on_pb_main_right_pressed(self): print("main_right"); self.sw_pages.setCurrentIndex(MAIN_PAGE)
@@ -290,10 +416,95 @@ class Main(QMainWindow, Ui_Window):
 
     def on_pb_logo_right_pressed(self): print("logo_right"); self.sw_pages.setCurrentIndex(LOGO_PAGE)
 
-    def on_pb_dose_nom_pressed(self): print("dose_nom"); self.show_numpad('DOZA1')
+    # Push Buttons on the pages
+    def on_pb_dose_nom_pressed(self): self.enter_numeric('DOZA1')
 
+    def on_pb_run_pressed(self): self.send_key('K_RUN')
 
+    def on_pb_stop_pressed(self): self.send_key('K_STOP')
 
+    def on_pb_unload_pressed(self): self.send_key('K_UNLD')
+
+    def on_pb_parn_pressed(self): self.enter_numeric('PARN', 0, LASTPAR)
+
+    def on_pb_parv_pressed(self): self.set_parv()
+
+    def on_pb_next_pressed(self): self.send_key('K_NEXT')
+
+    def on_pb_prev_pressed(self): self.send_key('K_PREV')
+
+    def on_pb_clb0_pressed(self): self.send_key('K_CLB0')
+
+    def on_pb_clb1_pressed(self): self.send_key('K_CLB1')
+
+    def on_pb_clb2_pressed(self): self.send_key('K_CLB2')
+
+    def on_pb_clb3_pressed(self): self.send_key('K_CLB3')
+
+    def on_pb_zero_pressed(self): self.zero_toggle()
+
+    # Checkboxes
+    def on_rb_tare_pressed(self): self.tare_toggle()
+
+    def on_rb_master_pressed(self): self.send_key('K_MAST')
+
+    def on_rb_out6_pressed(self): self.send_key('K_OUT6')   # Slave toggles itself
+    def on_rb_out7_pressed(self): self.send_key('K_OUT7')
+    def on_rb_out8_pressed(self): self.send_key('K_OUT8')
+    def on_rb_out9_pressed(self): self.send_key('K_OUT9')
+    def on_rb_outa_pressed(self): self.send_key('K_OUTA')
+    def on_rb_outb_pressed(self): self.send_key('K_OUTB')
+    def on_rb_outc_pressed(self): self.send_key('K_OUTC')
+    def on_rb_outd_pressed(self): self.send_key('K_OUTD')
+
+    # Actions (pull-down menu)
+    @QtCore.pyqtSlot()  # signal with no arguments. Need it to cut two launches
+    def on_action_rep0_triggered(self): self.enter_numeric('REP0')
+
+    @QtCore.pyqtSlot()
+    def on_action_rep1_triggered(self): self.enter_numeric('REP1')
+
+    @QtCore.pyqtSlot()
+    def on_action_rep2_triggered(self): self.enter_numeric('REP2')
+
+    @QtCore.pyqtSlot()
+    def on_action_rep3_triggered(self): self.enter_numeric('REP3')
+
+    @QtCore.pyqtSlot()
+    def on_action_clb0_triggered(self): self.enter_numeric('CLB0')
+
+    @QtCore.pyqtSlot()
+    def on_action_clb1_triggered(self): self.enter_numeric('CLB1')
+
+    @QtCore.pyqtSlot()
+    def on_action_clb2_triggered(self): self.enter_numeric('CLB2')
+
+    @QtCore.pyqtSlot()
+    def on_action_clb3_triggered(self): self.enter_numeric('CLB3')
+
+    @QtCore.pyqtSlot()
+    def on_action_pcsn_triggered(self): self.enter_numeric('PCSN')
+
+    @QtCore.pyqtSlot()
+    def on_action_pcsn_triggered(self): self.enter_numeric('PCSN')
+
+    @QtCore.pyqtSlot()
+    def on_action_round_triggered(self): self.enter_numeric('ROUND')
+
+    @QtCore.pyqtSlot()
+    def on_action_master_triggered(self): self.send_key('K_MAST')
+
+    @QtCore.pyqtSlot()
+    def on_action__triggered(self):
+        self.enter_numeric('PCSN')
+
+    @QtCore.pyqtSlot()
+    def on_action_fast_triggered(self): self.fast_toggle()
+
+    @QtCore.pyqtSlot()
+    def on_action_exit_triggered(self): self.close()
+
+    @QtCore.pyqtSlot()
     def on_action_Port_triggered(self):               # toolbar: 'Port' key
         self.requests_stopped = True
         p, ok = QInputDialog.getItem(self, 'Input Dialog', 'Enter or choose port name:', ports)
@@ -321,122 +532,8 @@ class Main(QMainWindow, Ui_Window):
         self.requests_stopped = False
         self.update_data()          # ..e.g. we just want to reopen port manually
 
-    def on_action_Quit_triggered(self):
-        # ModbusChannel.close(self.io)
-        self.close()
 
-    # def on_action_Modify_triggered(self):
-    #     self.ui_stopped = True
-
-    def resumeRefresh(self): pass
-
-    def stopRefresh(self): pass
-    
-
-
-    def set_new_value(self, register_name):
-        dialog = QInputDialog(self)
-        dialog.show()
-        txt, accept = dialog.getText(self, 'Register Value', 'Enter integer')
-        if accept:
-            self.write_rg(register_name, str(txt))
-        dialog.close()      # Не закривається, сука! Лише через пару спроб...
-
-    def tare_toggle(self):
-        tr = self.inpBin[adcRg['TARE'][0]]
-        if tr == 0:
-            self.write_ctrl_bit('TAREBIT', 1)   # Take tare via CTRL command
-        else:
-            self.write_rg('TARE', '0')         # reset tare to Null
-
-    def zero_toggle(self):
-        tr = self.inpBin[adcRg['ZERO'][0]]
-        if tr == 0:
-            self.write_ctrl_bit('ZEROBIT', 1)   # Take zero via CTRL command
-        else:
-            self.write_rg('ZERO', '0')         # reset zero to Null
-
-    def fast_toggle(self):
-        if self.inpBin[adcRg['CTRL'][0]] & adcBit['FASTMSK'] == 0:
-            print('1')
-            self.write_ctrl_bit('FASTBIT', 1)   # set FAST bit
-        else:
-            print('0')
-            self.write_ctrl_bit('FASTBIT', 0)   # reset FAST bit
-
-    def adc_clbr(self, bit_name):
-        menu = QMenu(self)
-        setAction = menu.addAction("Click to calibrate ADC or ESC to dismiss")
-        pnt = QPoint(50, 250)    # facepalm....
-        action = menu.exec_(self.mapToGlobal(pnt))
-        if action == setAction:
-            self.write_ctrl_bit(bit_name, 1)
-
-
-    def write_ctrl_bit(self, c, v):   # c - conf text (look adc descriptor), TAREBIT etc.
-        r = adcRg['CTRL'][0]                  # Register number is const in this method
-        try:
-            bit = adcBit[c][0]                 # bit number 0...15
-        except LookupError:
-            txt = 'USER ERROR: set_ctrl_bit(): No bit \'{:s}\' in CTRL register'.format(c)
-            logging.info(txt)
-            return
-        dostup_set = 0 != self.inpBin[adcRg['STAT'][0]] & adcBit['DOSTUPMSK']
-        master_protected = 1 == adcBit[c][1]
-        if master_protected and (not dostup_set):
-            txt = 'USER ERROR: set_ctrl_bit(): Bit \'{:s}\' is Masterbit protected'.format(c)
-            logging.error(txt)
-            self.freeze_status(txt)
-            return
-        # # FAST bit may be set or may be reset
-        # v = 1
-        # if c == 'FASTBIT':
-        #     if self.inpBin[adc_rg['CTRL'][0]] & (1 << adc_bits['FASTBIT'][0]):
-        #         v = 0
-        print('try to write bit: ', 32 * r + bit, v)
-        t, b = self.io.write_coil(self.slave, 32 * r + bit, v)
-        if t is not '':
-            txt = 'HARDWARE ERROR: io.write_coil() returns error: {:s}'.format(t)
-            logging.error(txt)
-            self.freeze_status(txt)
-        return
-
-    def send_key(self, c, v):   # c - conf text (look adc descriptor), TAREBIT etc.
-        r = adcRg['KEYS'][0]                  # Register number is const in this method
-        try:
-            bit = keyBit[c]                 # bit number 0...15
-        except LookupError:
-            txt = 'USER ERROR: sendKey(): No bit \'{:s}\' in KEYS register'.format(c)
-            logging.info(txt)
-            return
-        print('try to write bit: ', 32 * r + bit, v)
-        t, b = self.io.write_coil(self.slave, 32 * r + bit, v)
-        if t is not '':
-            txt = 'HARDWARE ERROR: io.write_coil() returns error: {:s}'.format(t)
-            logging.error(txt)
-            self.freeze_status(txt)
-        return
-
-    def freeze_status(self, msg):
-        self.status2freeze = True
-        self.status_freeze_timer.singleShot(4000, self.defreeze_status)
-        #self.statusBar.showMessage(msg)
-
-    def defreeze_status(self):
-        self.status2freeze = False
-
-    def status_refresh(self, msg):
-        if self.status2freeze:
-            return
-        if msg.lower() == 'ok':
-            msg += '     Port: {:s}, SlaveID: {:d}, baudrate: {:d}'.format(self.port,
-                                                                           self.slave, self.baud)
-            self.statusbar.showMessage(msg)
-        else:
-            self.statusbar.showMessage(msg)
-            self.statusbar.color = 'red'
-
-
+"""
 def int32(x):
     if x > 0xFFFFFFFF:              # more than 32-bits
         raise OverflowError
@@ -447,9 +544,49 @@ def int32(x):
         else:
             return -2147483648      # = 0x80000000 - minimal (negative) int32_t number
     return x
+"""
+"""
+def write_ctrl_bit(self, c, v):  # c - conf text (look adc descriptor), TAREBIT etc.
+    r = adcRg['CTRL'][0]  # Register number is const in this method
+    try:
+        bit = adcBit[c][0]  # bit number 0...15
+    except LookupError:
+        txt = 'USER ERROR: set_ctrl_bit(): No bit \'{:s}\' in CTRL register'.format(c)
+        logging.info(txt)
+        return
+    dostup_set = 0 != self.inpBin[adcRg['STAT'][RG_REGNUM]] & adcBit['DOSTUPMSK']
+    master_protected = 1 == adcBit[c][1]
+    if master_protected and (not dostup_set):
+        txt = 'USER ERROR: set_ctrl_bit(): Bit \'{:s}\' is Masterbit protected'.format(c)
+        logging.error(txt)
+        self.freeze_status(txt)
+        return
+    # # FAST bit may be set or may be reset
+    # v = 1
+    # if c == 'FASTBIT':
+    #     if self.inpBin[adc_rg['CTRL'][RG_REGNUM]] & (1 << adc_bits['FASTBIT'][0]):
+    #         v = 0
+    print('try to write bit: ', 32 * r + bit, v)
+    t, b = self.io.write_coils(self.slave, 32 * r + bit, v)
+    if t is not '':
+        txt = 'HARDWARE ERROR: io.write_coil() returns error: {:s}'.format(t)
+        logging.error(txt)
+        self.freeze_status(txt)
+    return
+"""
+"""
+    def adc_clbr(self, bit_name):
+        menu = QMenu(self)
+        setAction = menu.addAction("Click to calibrate ADC or ESC to dismiss")
+        pnt = QPoint(50, 250)  # facepalm....
+        action = menu.exec_(self.mapToGlobal(pnt))
+        if action == setAction:
+            self.write_ctrl_bit(bit_name, 1)
+"""
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     ui = Main()
     sys.exit(app.exec_())
+

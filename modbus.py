@@ -55,7 +55,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
         logging.basicConfig(level=logging.ERROR)
 
     # returns '' and binary tuple. To read all: get_regs(0, adc['TOTAL_REGS'])
-    def get_regs(self, slave, begin, length):
+    def read_regs(self, slave, begin, length):
         txt = ''
         got = ()
         try:
@@ -71,7 +71,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
         return txt, got
 
     # dbBegin, dbNumber - double registers' bias and number
-    def get_db(self, slave, dbBegin, dbNumber):
+    def read_dregs(self, slave, dbBegin, dbNumber):
         txt = ''
         got1 = ()
         got2 = ()
@@ -80,8 +80,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
             return 'Modbus command execution error (too many registers)', got
         if dbNumber > 60:
             try:
-                got1 = self.execute(slave, cst.READ_HOLDING_REGISTERS,
-                                   dbBegin << 1, 120)
+                got1 = self.execute(slave, cst.READ_HOLDING_REGISTERS, dbBegin << 1, 120)
             except error_def.ModbusError as e:
                 txt = '%s- Code=%d' % (e, e.get_exception_code())
                 logging.error(txt)
@@ -104,18 +103,15 @@ class ModbusChannel(mb_rtu.RtuMaster):
         got = got1 + got2
         doubles = []
         i = 0
-        #print(got)
         while i < len(got):
             value = (got[i + 1] << 16) | got[i]
-            #if (got[i+1] & 0x8000) != 0:
             if value > 0x7fffffff:
                 value -= 0x100000000
             doubles.append(value)
             i += 2
-        #print(tuple(doubles))
         return txt, tuple(doubles)
 
-    def write_rg(self, slave, begin, val):
+    def write_regs(self, slave, begin, val):
         try:
             txt = 'Try to write Register:{:2d} val:{:d}'.format(begin, val)
             logging.debug(txt)
@@ -133,7 +129,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
             logging.error(txt)
         return txt, begin
 
-    def write_db(self, slave, begin, dval):  # Увага! Тут begin - номер подійного р-ра!
+    def write_dregs(self, slave, begin, dval):  # Увага! Тут begin - номер подійного р-ра!
         try:
             hi = dval >> 16
             lo = dval & 0xffff
@@ -154,7 +150,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
             logging.error(txt)
         return txt, begin
 
-    def write_coil(self, slave, begin, val):
+    def write_coils(self, slave, begin, val):
         try:
             r = self.execute(slave, function_code=cst.WRITE_SINGLE_COIL, starting_address=begin,
                              output_value=val)
@@ -179,14 +175,14 @@ if __name__ == '__main__':
     #tup = m.get_regs(1, 0, 106)
     while True:
         time.sleep(0.2)
-        tup = m.get_regs(1, 0, nregs)
+        tup = m.read_regs(1, 0, nregs)
         for j in range(len(tup[1])):
             i = j
             if i == (i // 2) * 2:
                 val = tup[1][j] + tup[1][j+1] * 65536
                 tx = '{:2d} {:6} {:9d}  0x{:04X}'.format(i, map[i//2], val, val)
                 print(tx)
-        tup = m.get_regs(1, nregs, nregs)
+        tup = m.read_regs(1, nregs, nregs)
         for j in range(len(tup[1])):
             i = j + nregs
             if i == (i // 2) * 2:
