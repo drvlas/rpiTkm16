@@ -32,7 +32,7 @@ RIGHT_SHIFT = 4
 
 # tables for Window
 bauds = [2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 76800, 115200]
-ports = ['/dev/ttyUSB0', '/dev/ttyUSB1', 'COM1', 'COM2']
+ports = ['/dev/ttyUSB0', '/dev/ttyUSB1', '/dev/serial0', 'COM1', 'COM2']
 pointFormat5 = {
             0: ('{: 06d}', 1),
             1: ('{: 06.1f}', 0.1),

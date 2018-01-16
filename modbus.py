@@ -27,7 +27,7 @@ from descriptor import *
 #   If set_verbose(False) - logs only "RtuMaster /dev/ttyUSB0 is opened"
 # When setLevel(logging.INFO): as if set_verbose(False)
 logger = mb_utils.create_logger("console")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 # execute:
 # pdu = struct.pack(">BHH", function_code, starting_address, quantity_of_x)
@@ -51,7 +51,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
                                                       stopbits, timeout=2.5, xonxoff=0,
                                                       rtscts=0))
         self.set_timeout(1.5)
-        self.set_verbose(False)
+        self.set_verbose(True)
         logging.basicConfig(level=logging.ERROR)
 
     # returns '' and binary tuple. To read all: get_regs(0, adc['TOTAL_REGS'])
@@ -65,43 +65,47 @@ class ModbusChannel(mb_rtu.RtuMaster):
             txt = '%s- Code=%d' % (e, e.get_exception_code())
             logging.error(txt)
         except error_def.ModbusInvalidResponseError:
-            txt = 'Modbus command execution error (no link?)'
+            txt = 'Modbus cmd exec error (read_regs)'
             logging.error(txt)
         logging.debug('get_regs OK')
         return txt, got
 
     # dbBegin, dbNumber - double registers' bias and number
     def read_dregs(self, slave, dbBegin, dbNumber):
+        _maxd = 60
         txt = ''
+        doubles = []    # Prepare alarm exit
         got1 = ()
         got2 = ()
         got = ()
-        if dbNumber > 120:
+        if dbNumber > (_maxd<<1):
             return 'Modbus command execution error (too many registers)', got
-        if dbNumber > 60:
+        if dbNumber > _maxd:
             try:
-                got1 = self.execute(slave, cst.READ_HOLDING_REGISTERS, dbBegin << 1, 120)
+                got1 = self.execute(slave, cst.READ_HOLDING_REGISTERS, dbBegin << 1, _maxd<<1)
             except error_def.ModbusError as e:
                 txt = '%s- Code=%d' % (e, e.get_exception_code())
                 logging.error(txt)
+                return txt, tuple(doubles)
             except error_def.ModbusInvalidResponseError:
-                txt = 'Modbus command execution error (no link?)'
+                txt = 'ModbusInvalidResponseError, read_dregs 1'
                 logging.error(txt)
-            logging.debug('get_regs 60 OK')
-            dbBegin += 60
-            dbNumber -= 60
+                return txt, tuple(doubles)
+            logging.debug('get_regs {:d} double Rg OK'.format(_maxd))
+            dbBegin += _maxd
+            dbNumber -= _maxd
         try:
-            got2 = self.execute(slave, cst.READ_HOLDING_REGISTERS,
-                               dbBegin << 1, dbNumber << 1)
+            got2 = self.execute(slave, cst.READ_HOLDING_REGISTERS, dbBegin << 1, dbNumber << 1)
         except error_def.ModbusError as e:
             txt = '%s- Code=%d' % (e, e.get_exception_code())
             logging.error(txt)
+            return txt, tuple(doubles)
         except error_def.ModbusInvalidResponseError:
-            txt = 'Modbus command execution error (no link?)'
+            txt = 'ModbusInvalidResponseError read_dregs 2'
             logging.error(txt)
-        logging.debug('get_regs OK')
+            return txt, tuple(doubles)
+        logging.debug('get_regs {:d} double Rg OK'.format(dbNumber))
         got = got1 + got2
-        doubles = []
         i = 0
         while i < len(got):
             value = (got[i + 1] << 16) | got[i]
@@ -125,7 +129,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
             txt = '%s- Code=%d' % (e, e.get_exception_code())
             logging.error(txt)
         except error_def.ModbusInvalidResponseError:
-            txt = 'Modbus command execution error (no link?)'
+            txt = 'Modbus cmd exec error (write_regs)'
             logging.error(txt)
         return txt, begin
 
@@ -146,7 +150,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
             txt = '%s- Code=%d' % (e, e.get_exception_code())
             logging.error(txt)
         except error_def.ModbusInvalidResponseError:
-            txt = 'Modbus command execution error (no link?)'
+            txt = 'Modbus cmd exec error (write_dregs)'
             logging.error(txt)
         return txt, begin
 
@@ -161,7 +165,7 @@ class ModbusChannel(mb_rtu.RtuMaster):
             txt = '%s- Code=%d' % (e, e.get_exception_code())
             logging.error(txt)
         except error_def.ModbusInvalidResponseError:
-            txt = 'Modbus command execution error (no link?)'
+            txt = 'Modbus cmd exec error (write_coils)'
             logging.error(txt)
         return txt, begin
 

@@ -8,6 +8,7 @@
     05.01.2017 - pulled from Git and begin to "nodule-refactor"
 """
 import sys
+sys.path.append("ui")
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, QPoint
@@ -21,7 +22,7 @@ from data import bauds, ports, point_table, RIGHT_SHIFT, LEFT_SHIFT, pointFormat
 from data import MAIN_PAGE, PARS_PAGE, CLBR_PAGE, MANU_PAGE, LOGO_PAGE
 from qt_window import Ui_Window
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Main(QMainWindow, Ui_Window):
@@ -42,7 +43,7 @@ class Main(QMainWindow, Ui_Window):
         self.sw_pages.setCurrentIndex(0)
         # Serial port
         self.baud = bauds[6]
-        self.port = ports[0]                # Default Linux port name
+        self.port = ports[2]                # Default Linux port name
         self.slave = 1                      # Default Slave ID
         if len(sys.argv) > 1:
             self.port = sys.argv[1]
@@ -76,6 +77,7 @@ class Main(QMainWindow, Ui_Window):
                 return
         # MODBUS: read all registers as double regs
         txt, self.inpBin = self.io.read_dregs(self.slave, 0, nregs)
+        #txt, self.inpBin = self.io.read_dregs(self.slave, 0, 1)  # DEBUG
         # END OF MODBUS
         self.modbus_count += 1
         if 'error' in txt.lower():  # Modbus command execution error (no link?)
