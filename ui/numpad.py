@@ -18,12 +18,12 @@ SGN = 3
 
 
 class Numpad(QDialog, Ui_Numpad):
-    def __init__(self, parent=None, mi=0, ma=0, va=0, po=0, si=0):
+    def __init__(self, va, po, parent=None, mi=0, ma=999999999):    # va may be negative integer
         super(Numpad, self).__init__(parent)
         self.setupUi(self)
         self.new = va
         self.point = po
-        self.sign = si
+        self.sign = 1
         self.virgin = True
         self.answer = ()
         self.minimal = mi
@@ -43,7 +43,7 @@ class Numpad(QDialog, Ui_Numpad):
         print("digits:{:d}  point:{: 2d}  value:{:d}".format(self.digits, self.point, self.new))
         form = point_table[self.point][FORMAT_POS]
         mult = point_table[self.point][RIGHT_SHIFT]
-        self.lab_val.setText(form.format(mult * self.sign * self.new))
+        self.lab_val.setText(form.format(mult * self.new))
 
     def defloration(self):
         if self.virgin:
